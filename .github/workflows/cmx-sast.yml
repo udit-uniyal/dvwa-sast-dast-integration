@@ -1,0 +1,90 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Checkmarx Sarif Integration
+
+# Controls when the workflow will run
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  schedule:
+    - cron: '18 2 * * 5'
+
+permissions:
+  security-events: write
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Checkmarx scan
+        uses: checkmarx/ast-github-action@main
+        with:
+          base_uri: https://deu.iam.checkmarx.net/
+          cx_client_id: ${{ secrets.CX_CLIENT_ID }}
+          cx_client_secret: ${{ secrets.CX_CLIENT_SECRET }}
+          cx_tenant: ${{ secrets.CX_TENANT }}
+          additional_params: --report-format sarif --output-path .
+
+      - name: Fix SARIF file levels
+        run: |
+          jq 'walk(if type == "object" and has("level") then .level |= (if . == "none" or . == "note" or . == "warning" or . == "error" then . else "note" end) else . end)' cx_result.sarif > tmp.sarif && mv tmp.sarif cx_result.sarif
+
+      - name: Append GitHub metadata to SARIF
+        env:
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+          GITHUB_REF: ${{ github.ref }}
+          GITHUB_RUN_ID: ${{ github.run_id }}
+          GITHUB_RUN_NUMBER: ${{ github.run_number }}
+          SOURCE: "GitHub"
+        run: |
+          GITHUB_URL="${{ github.server_url }}/${{ github.repository }}"
+          GITHUB_RUN_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          jq --arg repo "$GITHUB_REPOSITORY" \
+             --arg sha "$GITHUB_SHA" \
+             --arg ref "$GITHUB_REF" \
+             --arg run_id "$GITHUB_RUN_ID" \
+             --arg run_number "$GITHUB_RUN_NUMBER" \
+             --arg github_url "$GITHUB_URL" \
+             --arg github_run_url "$GITHUB_RUN_URL" \
+             --arg source "$SOURCE" \
+             '.runs[0].invocations += [{
+                "executionSuccessful": true,
+                "toolExecutionNotifications": [],
+                "toolConfigurationNotifications": [],
+                "properties": {
+                  "repository": $repo,
+                  "commit": $sha,
+                  "ref": $ref,
+                  "workflow_run_id": $run_id,
+                  "workflow_run_number": $run_number,
+                  "repository_url": $github_url,
+                  "workflow_run_url": $github_run_url,
+                  "source": $source
+                }
+              }]' cx_result.sarif > tmp.sarif && mv tmp.sarif cx_result.sarif
+
+      - name: Upload SARIF file to GitHub
+        uses: actions/upload-artifact@v3
+        with:
+          name: sarif-result
+          path: cx_result.sarif
+          
+      - name: Upload SARIF file
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: cx_result.sarif
+
+      - name: Push SARIF file to CSPM panel
+        run: |
+          curl --location '${{ secrets.CSPM_URL }}/api/v1/artifact/?tenant_id=${{ secrets.TENANT_ID }}&data_type=CMX&save_to_s3=true&label_id=${{ secrets.LABEL_ID }}' \
+            --header 'Tenant-Id: ${{ secrets.TENANT_ID }}' \
+            --header 'Authorization: Bearer ${{ secrets.CSPM_TOKEN }}' \
+            --form 'file=@./cx_result.sarif'
