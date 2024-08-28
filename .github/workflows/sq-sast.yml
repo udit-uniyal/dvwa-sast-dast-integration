@@ -40,7 +40,7 @@ jobs:
         env:
           AK_URL: ${{ secrets.AK_URL }}
           TENANT_ID: ${{ secrets.TENANT_ID }}
-          AK_TOK: ${{ secrets.AK_TOK }}
+          AK_TOK: ${{ secrets.TOKEN }}
         run: |
           cd ${GITHUB_WORKSPACE}
           for file in `ls -1 SQ-*.json`; do
