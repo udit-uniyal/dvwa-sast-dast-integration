@@ -77,10 +77,10 @@ jobs:
           name: sarif-result
           path: cx_result.sarif
           
-      - name: Upload SARIF file
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: cx_result.sarif
+            # - name: Upload SARIF file
+            #uses: github/codeql-action/upload-sarif@v3
+            #with:
+            #sarif_file: cx_result.sarif
 
       - name: Push SARIF file to CSPM panel
         run: |
