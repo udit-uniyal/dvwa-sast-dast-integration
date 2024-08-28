@@ -84,7 +84,7 @@ jobs:
 
       - name: Push SARIF file to CSPM panel
         run: |
-          curl --location '${{ secrets.CSPM_URL }}/api/v1/artifact/?tenant_id=${{ secrets.TENANT_ID }}&data_type=CMX&save_to_s3=true&label_id=${{ secrets.LABEL_ID }}' \
-            --header 'Tenant-Id: ${{ secrets.TENANT_ID }}' \
-            --header 'Authorization: Bearer ${{ secrets.CSPM_TOKEN }}' \
+          curl --location '${{ secrets.DEV_URL }}/api/v1/artifact/?tenant_id=${{ secrets.DEV_TENANT_ID }}&data_type=CMX&save_to_s3=true&label_id=${{ secrets.LABEL_ID }}' \
+            --header 'Tenant-Id: ${{ secrets.DEV_TENANT_ID }}' \
+            --header 'Authorization: Bearer ${{ secrets.DEV_TOKEN }}' \
             --form 'file=@./cx_result.sarif'
