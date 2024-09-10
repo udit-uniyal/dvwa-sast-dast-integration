@@ -18,7 +18,7 @@
 - - -
 
 ## ترخيص
-
+.
 هذا الملف جزء من Damn Vulnerable Web Application (DVWA).
 
 يعد تطبيق Damn Vulnerable Web Application (DVWA) برنامجًا مجانيًا: يمكنك إعادة توزيعه و / أو تعديله
