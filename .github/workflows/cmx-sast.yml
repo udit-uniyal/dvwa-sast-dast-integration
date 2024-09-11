@@ -5,11 +5,11 @@ name: Checkmarx Sarif Integration
 # Controls when the workflow will run
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
   schedule:
-    - cron: '18 2 * * 5'
+    - cron: "18 2 * * 5"
 
 permissions:
   security-events: write
@@ -72,7 +72,7 @@ jobs:
               }]' cx_result.sarif > tmp.sarif && mv tmp.sarif cx_result.sarif
 
                 - name: Extract and Embed Code Snippets in SARIF using Python
-        id: embed_snippets
+      - name: embed_snippets
         run: |
           python3 <<EOF
           import os
@@ -143,13 +143,13 @@ jobs:
           process_sarif_file("cx_result.sarif")
           EOF
 
-
       - name: Upload SARIF file to GitHub
         uses: actions/upload-artifact@v3
         with:
           name: sarif-result
-          path: cx_result.sarif
-          
+          path:
+            cx_result.sarif
+
             # - name: Upload SARIF file
             #uses: github/codeql-action/upload-sarif@v3
             #with:
