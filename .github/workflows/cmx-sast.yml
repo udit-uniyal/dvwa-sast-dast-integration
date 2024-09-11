@@ -71,8 +71,8 @@ jobs:
                 }
               }]' cx_result.sarif > tmp.sarif && mv tmp.sarif cx_result.sarif
 
-                - name: Extract and Embed Code Snippets in SARIF using Python
-      - name: embed_snippets
+      - name: Extract and Embed Code Snippets in SARIF using Python
+        id: embed_snippets
         run: |
           python3 <<EOF
           import os
