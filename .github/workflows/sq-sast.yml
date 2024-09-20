@@ -44,8 +44,8 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}
           for file in `ls -1 SQ-*.json`; do
-            curl --location --request POST "https://$AK_URL/api/v1/artifact/?tenant_id=$TENANT_ID&data_type=SQ&label_id=dvwa&save_to_s3=false" \
-              --header "Tenant-Id: $TENANT_ID" \
-              --header "Authorization: Bearer $TOKEN" \
+            curl --location --request POST "https://cspm.stage.accuknox.com/api/v1/artifact/?tenant_id=5088&data_type=SQ&label_id=sast&save_to_s3=false" \
+              --header "Tenant-Id: 5088" \
+              --header "Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxODg0OTM3OTY5LCJqdGkiOiI0MDc3YWI5MTdlNTQ0NGEwYTFmNmExZTYzYWM5ZGVjYyIsImlzcyI6ImNzcG0uc3RhZ2UuYWNjdWtub3guY29tIn0.RUAFGIfS8NhZ83SZ-Rkw07-BIdXWpRjAbqTLzJvYz8Z-cjxJ4uUvH-h3-xGMpQ26a_tA8h1AvzM60L2pS338QA0CRVZrH0WTtNNagb2eNJdnYOH6YW7sdDAWE78SroRS8nKZFGyvGAILz7iDyNcf_rXybAhTCN-zjIjv1Hy73dECO0KCgx9j6_hB7Eyhqdm8_RmJZStL9sSyyywNLyUDMMsP35ah42ARdiF2OB3_fQIwrIRS9ICoAtCqRW6sTh4ctzfdv4PPJFsOeuxzl3pEpVPnwj7yR9QZojD5LjiZujK6k8WhVKZRQMPtCJ9HKm_igIDC4qGh0Yqi9qV35MEe8g" \
               --form "file=@\"$file\""
           done
