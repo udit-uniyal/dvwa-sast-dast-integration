@@ -44,8 +44,8 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}
           for file in `ls -1 SQ-*.json`; do
-            curl --location --request POST "https://cspm.stage.accuknox.com/api/v1/artifact/?tenant_id=5088&data_type=SQ&label_id=sast&save_to_s3=false" \
-              --header "Tenant-Id: ${{ secrets.tenant_id }}" \
+            curl --location --request POST "https://cspm.stage.accuknox.com/api/v1/artifact/?tenant_id=${{ secrets.TENANT_ID }}&data_type=SQ&label_id=sast&save_to_s3=false" \
+              --header "Tenant-Id: ${{ secrets.TENANT_ID }}" \
               --header "Authorization: Bearer ${{ secrets.TOKEN }}" \
               --form "file=@\"$file\""
           done
