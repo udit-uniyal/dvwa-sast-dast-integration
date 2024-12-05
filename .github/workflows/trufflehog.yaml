@@ -30,9 +30,7 @@ jobs:
 
       - name: Run TruffleHog (Filesystem Scan)
         run: |
-          echo "Running TruffleHog..."
-          ls -al
-          trufflehog --version
+          echo "Running TruffleHog filesystem scan..."
           trufflehog filesystem --directory . --json > trufflehog-report.json || {
             echo "TruffleHog scan failed! Showing debug information."
             exit 1
@@ -49,4 +47,5 @@ jobs:
       - name: Display TruffleHog Findings (Optional)
         if: success()
         run: |
-          cat trufflehog-report.json | jq '.'
+          echo "TruffleHog Findings:"
+          cat trufflehog-report.json | jq '.' || echo "No secrets found."
