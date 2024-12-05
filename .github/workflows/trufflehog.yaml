@@ -30,7 +30,7 @@ jobs:
 
       - name: Run TruffleHog
         run: |
-          trufflehog filesystem --directory . --json > trufflehog-report.json
+          trufflehog . --json > trufflehog-report.json
 
       - name: Upload TruffleHog Report as Artifact
         uses: actions/upload-artifact@v3
