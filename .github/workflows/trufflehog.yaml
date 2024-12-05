@@ -33,7 +33,7 @@ jobs:
           echo "Running TruffleHog..."
           ls -al
           trufflehog --version
-          trufflehog --scan-directories . --json > trufflehog-report.json || {
+          trufflehog filesystem --directory . --json > trufflehog-report.json || {
             echo "TruffleHog scan failed! Showing debug information."
             exit 1
           }
