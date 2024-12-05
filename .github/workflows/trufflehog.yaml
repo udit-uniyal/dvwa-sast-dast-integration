@@ -28,16 +28,15 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install truffleHog
 
-      - name: Run TruffleHog (Filesystem Scan)
+      - name: Run TruffleHog (Git History Scan)
         run: |
-          echo "Running TruffleHog filesystem scan..."
-          trufflehog filesystem --directory . --json > trufflehog-report.json || {
+          echo "Running TruffleHog scan on Git history..."
+          trufflehog --json https://github.com/udit-uniyal/dvwa-sast-dast-integration/ > trufflehog-report.json || {
             echo "TruffleHog scan failed! Showing debug information."
             exit 1
           }
 
-      - name: Upload TruffleHog Report as Artifact (if exists)
-        if: always() # Uploads the report even if the job fails
+      - name: Upload TruffleHog Report as Artifact
         uses: actions/upload-artifact@v3
         with:
           name: trufflehog-report
@@ -45,7 +44,6 @@ jobs:
           if-no-files-found: ignore
 
       - name: Display TruffleHog Findings (Optional)
-        if: success()
         run: |
           echo "TruffleHog Findings:"
           cat trufflehog-report.json | jq '.' || echo "No secrets found."
