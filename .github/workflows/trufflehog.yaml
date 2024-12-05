@@ -28,16 +28,25 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install truffleHog
 
-      - name: Run TruffleHog
+      - name: Run TruffleHog (Filesystem Scan with Debugging)
         run: |
-          trufflehog . --json > trufflehog-report.json
+          echo "Running TruffleHog..."
+          ls -al
+          trufflehog --version
+          trufflehog . --json > trufflehog-report.json || {
+            echo "TruffleHog scan failed! Showing debug information."
+            exit 1
+          }
 
-      - name: Upload TruffleHog Report as Artifact
+      - name: Upload TruffleHog Report as Artifact (if exists)
+        if: always() # Uploads the report even if the job fails
         uses: actions/upload-artifact@v3
         with:
           name: trufflehog-report
           path: trufflehog-report.json
+          if-no-files-found: ignore
 
       - name: Display TruffleHog Findings (Optional)
+        if: success()
         run: |
           cat trufflehog-report.json | jq '.'
