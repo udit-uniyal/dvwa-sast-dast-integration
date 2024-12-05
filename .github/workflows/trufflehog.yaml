@@ -28,12 +28,12 @@ jobs:
           python3 -m pip install --upgrade pip
           pip install truffleHog
 
-      - name: Run TruffleHog (Filesystem Scan with Debugging)
+      - name: Run TruffleHog (Filesystem Scan)
         run: |
           echo "Running TruffleHog..."
           ls -al
           trufflehog --version
-          trufflehog . --json > trufflehog-report.json || {
+          trufflehog --scan-directories . --json > trufflehog-report.json || {
             echo "TruffleHog scan failed! Showing debug information."
             exit 1
           }
