@@ -1,46 +1,38 @@
-name: TruffleHog Secret Scan
+name: Trufflehog Scan
 
 on:
   push:
     branches:
       - main
-      - 'feature/**'
   pull_request:
     branches:
       - main
 
 jobs:
-  scan_secrets:
-    name: Run TruffleHog Secret Scan
+  trufflehog-scan:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+    # Checkout the code
+    - name: Checkout Repository
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.x'
+    # Install Trufflehog
+    - name: Install Trufflehog
+      run: |
+        curl -sSfL https://raw.githubusercontent.com/trufflesecurity/trufflehog/main/scripts/install.sh | sh -s -- -b /usr/local/bin
+        trufflehog --version
 
-      - name: Install TruffleHog
-        run: |
-          python3 -m pip install --upgrade pip
-          pip install truffleHog
+    # Run Trufflehog Scan
+    - name: Run Trufflehog Scan
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        trufflehog git https://github.com/${{ github.repository }} --only-json > trufflehog-results.json
 
-      - name: Run TruffleHog (Git History Scan)
-        run: |
-          echo "Running TruffleHog scan on Git history..."
-          trufflehog --json https://github.com/udit-uniyal/dvwa-sast-dast-integration/ > trufflehog-report.json 
-
-      - name: Upload TruffleHog Report as Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: trufflehog-report
-          path: trufflehog-report.json
-          if-no-files-found: ignore
-
-      - name: Display TruffleHog Findings (Optional)
-        run: |
-          echo "TruffleHog Findings:"
-          cat trufflehog-report.json | jq '.' || echo "No secrets found."
+    # Upload the Results (Optional)
+    - name: Upload Results
+      uses: actions/upload-artifact@v3
+      with:
+        name: trufflehog-results
+        path: trufflehog-results.json
