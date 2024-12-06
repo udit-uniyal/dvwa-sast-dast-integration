@@ -31,10 +31,7 @@ jobs:
       - name: Run TruffleHog (Git History Scan)
         run: |
           echo "Running TruffleHog scan on Git history..."
-          trufflehog --json https://github.com/udit-uniyal/dvwa-sast-dast-integration/ > trufflehog-report.json || {
-            echo "TruffleHog scan failed! Showing debug information."
-            exit 1
-          }
+          trufflehog --json https://github.com/udit-uniyal/dvwa-sast-dast-integration/ > trufflehog-report.json 
 
       - name: Upload TruffleHog Report as Artifact
         uses: actions/upload-artifact@v3
